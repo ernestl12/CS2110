@@ -1,0 +1,15 @@
+# Ignore Compiled Files
+*.class
+
+# Ignore text files
+*.txt
+*.pdf
+
+# Ignore temp files
+*.swp
+
+# Ignore Eclipse project config files
+.metadata
+.metadata/*
+*/.project
+*/.classpath
