@@ -12,7 +12,7 @@ public class RadioRecommenderSystem {
   /**
    * Initializes the Parser and the RadioRecommenderSystem. Asks for user input through the console afterwards.
    * Should keep asking for input indefinitely. The user can input the following commands:
-   *   importlog <log filename>            - Imports a play log appends it to the current log. 
+   *   importlog <log filename>           - Imports a play log appends it to the current log. 
    *   similarsong <song ID>              - Finds the most similar song to the given song.
    *   similarradio <station ID>          - Finds the most similar radio station to the given station.
    *   stats <song ID>                    - Prints statistics of the given song.
@@ -24,7 +24,8 @@ public class RadioRecommenderSystem {
    * @param args The first argument should contain the folder path for the three files. 
    */
   public static void main(String[] args) {
-
+      String filepath = args[0];
+      Parser logParser = new Parser(filepath, "songs.txt", "stations.txt");
   }
 
   /**

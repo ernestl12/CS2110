@@ -2,26 +2,34 @@ package cs2110.ewy7.assignment1;
 
 public class Station {
 
+  private String _name;
+  private int _ID;
+  private int _logLength;
+  
   public Station(String name, int ID) {
+    _name = name;
+    _ID = ID;
+    _logLength = 0;
   }
   
   public String getName() {
-    return null;
+    return _name;
   }
   
   public int getID() {
-    return 0;
+    return _ID;
   }
   
   public int getLogLength() {
-    return 0;
+    return _logLength;
   }
   
   public void incrementLogLength() {
+    _logLength++;
   }
   
   @Override
   public String toString() {
-    return super.toString();
+    return _ID + ". " + _name;
   }
 }

@@ -3,9 +3,12 @@ package cs2110.ewy7.assignment1;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+// import java.util.Arrays;
 
 public class Parser {  
   
+  private String defaultPath;
+  // private int numSongs, numStations;
   private Song[] songs;
   private Station[] stations;
   
@@ -27,24 +30,66 @@ public class Parser {
    * IDs are in no particular order.
    */
   public Parser(String path, String songFilename, String stationFilename) {
+    defaultPath = path;
+    
     File songFile = new File(path, songFilename);
     File stationFile = new File(path, stationFilename);
     
     try {
+      
+      // Following code rolled out rather than placed in a function due to
+      // casting difficulties (i.e., function would have to operate on and
+      // return a generic Object[] variable, requiring up & downcasting
       Scanner songReader = new Scanner(songFile);
       Scanner stationReader = new Scanner(stationFile);
       
-      int numSongs = songReader.nextInt();
-      int numStations = stationReader.nextInt();
+      int numSongs = Integer.parseInt(songReader.nextLine());
+      int numStations = Integer.parseInt(stationReader.nextLine());
       
-      songs = new Song[numSongs];
-      stations = new Station[numStations];
+      int[] songIDs = new int[numSongs]; 
+      int[] stationIDs = new int[numStations];
       
-      for (Song a : songs) {
-        a = parseOneSong(songReader.next(), 0);
+      Song[] tempSongs = new Song[numSongs];
+      Station[] tempStations = new Station[numStations];
+      
+      // Find max ID numbers for Songs & Stations
+      for (int songNum = 0; songNum < numSongs; songNum++) {
+        tempSongs[songNum] = parseOneSong(songReader.nextLine(), 0);
+        songIDs[songNum] = tempSongs[songNum].getID();
       }
-      for (Station a : stations) {
-        a = parseOneStation(stationReader.next());
+      for (int stationNum = 0; stationNum < numStations; stationNum++) {
+        tempStations[stationNum] = parseOneStation(stationReader.nextLine());
+        stationIDs[stationNum] = tempStations[stationNum].getID();
+      }
+      
+      // Sorting implementation with java.util.Arrays
+      /* Arrays.sort(songIDs);
+       * Arrays.sort(stationsIDs);
+       * 
+       */
+      
+      int maxSongID = 0;
+      int maxStationID = 0;
+      
+      for (int a : songIDs) {
+        if (a > maxSongID) {
+          maxSongID = a;
+        }
+      }
+      for (int a : stationIDs) {
+        if (a > maxStationID) {
+          maxStationID = a;
+        }
+      }
+      
+      Song[] songs = new Song[maxSongID];
+      Station[] stations = new Station[maxStationID];
+      
+      for (Song a : tempSongs) {
+        songs[a.getID() - 1] = a;
+      }
+      for (Station b : tempStations) {
+        stations[b.getID() - 1] = b;
       }
       
       songReader.close();
@@ -74,6 +119,21 @@ public class Parser {
    * @return The current time after importing the log
    */
   public int processSongLog(String logFilename, int curTime) {
+    File logFile = new File(defaultPath, logFilename);
+    
+    int logTime = 0;
+    
+    try {
+      Scanner logReader = new Scanner(logFile);
+      
+      // TODO: Implement Log Reading method
+      
+      logReader.close();
+    } catch (FileNotFoundException e) {
+      System.err.println("FileNotFoundException: " + e.getMessage());
+      return curTime;
+    }
+    
     return 0;
   }
 
@@ -107,6 +167,7 @@ public class Parser {
   }
 
   public Song[] getSongs() {
+    
     return songs;
   }
 

@@ -2,16 +2,29 @@ package cs2110.ewy7.assignment1;
 
 public class Song {
 
+  private String _name, _artist;
+  private int _ID;
+  private Station[] _stations;
+  private int[] _plays;
+  
+  public Song(String name, String artist, int ID, Station[] stations) {
+    _name = name;
+    _artist = artist;
+    _ID = ID;
+    _stations = stations;
+    _plays = new int[0];
+  }
+  
   public String getName() {
-    return null;
+    return _name;
   }
 
   public String getArtist() {
-    return null;
+    return _artist;
   }
 
   public int getID() {
-    return 0;
+    return _ID;
   }
 
   /**
@@ -29,9 +42,6 @@ public class Song {
    */
   public int getLastPlayTime() {
     return 0;
-  }
-
-  public Song(String name, String artist, int ID, Station[] stations) {
   }
 
   public void addPlay(int stationId, int time) {
@@ -52,5 +62,10 @@ public class Song {
 
   public int getLastPlayed(int stationID) {
     return 0;
-  }  
+  }
+  
+  @Override
+  public String toString() {
+    return _ID + ". " + _artist + " - " + _name;
+  }
 }
