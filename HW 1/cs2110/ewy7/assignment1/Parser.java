@@ -82,8 +82,8 @@ public class Parser {
         }
       }
       
-      Song[] songs = new Song[maxSongID];
-      Station[] stations = new Station[maxStationID];
+      songs = new Song[maxSongID];
+      stations = new Station[maxStationID];
       
       for (Song a : tempSongs) {
         songs[a.getID() - 1] = a;
@@ -139,8 +139,10 @@ public class Parser {
 
   public Station parseOneStation(String line) {
     String[] data = line.split(";");
-    for (String a : data) {
-      a = a.trim();
+    
+    // Didn't use for (String a : data) because it wasn't changing the values in the array
+    for (int i = 0; i < data.length; i++) {
+      data[i] = data[i].trim();
     }
     
     String name = data[0];
@@ -153,8 +155,8 @@ public class Parser {
 
   public Song parseOneSong(String line, int numberOfStations) {
     String[] data = line.split(";");
-    for (String a : data) {
-      a = a.trim();
+    for (int i = 0; i < data.length; i++) {
+      data[i] = data[i].trim();
     }
     
     String name = data[0];

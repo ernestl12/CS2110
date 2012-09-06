@@ -6,7 +6,7 @@ public class Song {
   private int _ID;
   private Station[] _stations;
   private int[] _plays;
-  
+    
   public Song(String name, String artist, int ID, Station[] stations) {
     _name = name;
     _artist = artist;
@@ -33,6 +33,8 @@ public class Song {
    * @return the time this song was last played by the given station
    */
   public int getLastHeardByStation(int stationID) {
+    int lastPlayed = 0;
+    
     return 0;
   }
   
@@ -57,7 +59,20 @@ public class Song {
    * ]
    */
   public int[] getStatistics() {
-    return null;
+    int avg, plays, mostPlayedStationID, maxPlays, leastPlayedStationID, minPlays;
+    
+    avg = 0;
+    plays = 0;
+    mostPlayedStationID = 0;
+    maxPlays = 0;
+    leastPlayedStationID = 0;
+    minPlays = 0;
+    
+    int[] stats = {avg, plays, mostPlayedStationID, maxPlays, leastPlayedStationID, minPlays};
+    
+    
+    
+    return stats;
   }
 
   public int getLastPlayed(int stationID) {
