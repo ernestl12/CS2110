@@ -126,7 +126,11 @@ public class Parser {
     try {
       Scanner logReader = new Scanner(logFile);
       
-      // TODO: Implement Log Reading method
+      // TODO: Implement Log parsing method
+      while (logReader.hasNext()) {
+        logReader.next();
+        logTime++;
+      }
       
       logReader.close();
     } catch (FileNotFoundException e) {
@@ -134,7 +138,7 @@ public class Parser {
       return curTime;
     }
     
-    return 0;
+    return logTime + curTime;
   }
 
   public Station parseOneStation(String line) {

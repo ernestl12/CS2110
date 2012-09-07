@@ -17,15 +17,93 @@ public class RadioRecommenderSystem {
    *   similarradio <station ID>          - Finds the most similar radio station to the given station.
    *   stats <song ID>                    - Prints statistics of the given song.
    *   lastheardon <station ID> <song ID> - Finds the most recent time the song is played on the station.
-   *   lastplayed <song ID>        - Finds the most recent time the song is played on any station.
+   *   lastplayed <song ID>               - Finds the most recent time the song is played on any station.
    *   recommend <station ID>             - Recommends a song to the given station.
    *   exit                               - Exits the program.
    * 
    * @param args The first argument should contain the folder path for the three files. 
    */
   public static void main(String[] args) {
-      String filepath = args[0];
-      Parser logParser = new Parser(filepath, "songs.txt", "stations.txt");
+    String filepath = args[0];
+    
+    BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
+    String[] recognizedCommands = {"", "importlog", "similarsong", "similarradio", 
+        "stats", "lastheardon", "lastplayed", "recommend", "exit", "quit", "help", "h"};
+    
+    System.out.print("Welcome to the Radio Recommender System!\n\n" +
+                     "Before we begin, I'll need to import your songs, radio stations, and play history.\n\n" +
+                     "What's the name of your song file?\n> ");
+    
+    try {
+      String songFilename = inputReader.readLine();
+      
+      System.out.print("\nAnd what's the name of your stations file?\n> ");
+      String stationFilename = inputReader.readLine();
+      
+      Parser logParser = new Parser(filepath, songFilename, stationFilename);
+      
+      RadioRecommenderSystem recommender = 
+          new RadioRecommenderSystem(logParser.getSongs(), logParser.getStations());
+      
+      String userInput = "";
+      userInput = initializeSystem(inputReader);
+      while (!(userInput.equalsIgnoreCase("quit") ||
+               userInput.equalsIgnoreCase("exit") || 
+               userInput.equalsIgnoreCase("q")    )) {
+        
+        String[] input = userInput.split(" ");
+        String command = input[0];
+        
+        if (command.equalsIgnoreCase("importlog")) {
+        } else if (command.equalsIgnoreCase("similarsong")) {
+        } else if (command.equalsIgnoreCase("similarradio")) {
+        } else if (command.equalsIgnoreCase("stats")) {
+        } else if (command.equalsIgnoreCase("lastheardon")) {
+        } else if (command.equalsIgnoreCase("lastplayed")) {
+        } else if (command.equalsIgnoreCase("recommend")) {
+        } else if (command.equalsIgnoreCase("similarsong")) {
+        } else if (command.equalsIgnoreCase("similarsong")) {
+        } else if (command.equalsIgnoreCase("similarsong")) {
+        }
+        try {
+          System.out.print("> ");
+          userInput = inputReader.readLine();
+        } catch (IOException e) {
+          System.err.println("IOException: " + e.getMessage());
+          userInput = "";
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("IOException: " + e.getMessage());
+    }
+  }
+  
+  private static String initializeSystem(BufferedReader reader) {
+    System.out.println("\nProcessing Complete.");
+    
+    try {
+      printHelpMessage();
+      
+      System.out.print("> ");
+      String userInput = reader.readLine();
+      return userInput;
+    } catch (IOException e) {
+      System.err.println("IOException: " + e.getMessage());
+      return "";
+    }
+  }
+  
+  private static void printHelpMessage() {
+    System.out.println("Here's the list of commands this system recognizes:\n" +
+                       "importlog <log filename>             Imports a play log appends it to the current log.\n" +
+                       "similarsong <song ID>                Finds the most similar song to the chosen song.\n" +
+                       "similarradio <station ID>            Finds the most similar radio station to the chosen station.\n" +
+                       "stats <song ID>                      Prints statistics of the chosen song.\n" +
+                       "lastheardon <station ID> <song ID>   Finds the most recent time the song is played on the station.\n" +
+                       "lastplayed <song ID>                 Finds the most recent time the song is played on any station.\n" +
+                       "recommend <station ID>               Recommends a song to the chosen station.\n" +
+                       "exit, quit                           Exits the program.\n\n" +
+                       "To display this message again, type \"help\"\n.");
   }
 
   /**
@@ -34,6 +112,8 @@ public class RadioRecommenderSystem {
    * @param stations
    */
   public RadioRecommenderSystem(Song[] songs, Station[] stations) {
+    songList = songs;
+    stationList = stations;
   }
 
   /**
