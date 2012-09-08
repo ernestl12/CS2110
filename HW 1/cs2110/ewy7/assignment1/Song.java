@@ -14,6 +14,7 @@ public class Song {
   private Station[] _stations;
   private int[] _stationPlays;
   private int[] _lastPlayOnStation;
+  private int _lastPlayed;
   
   public Song(String name, String artist, int ID, Station[] stations) {
     _name = name;
@@ -22,6 +23,7 @@ public class Song {
     _stations = stations;
     _stationPlays = new int[stations.length];
     _lastPlayOnStation = new int[stations.length];
+    _lastPlayed = 0;
   }
   
   public String getName() {
@@ -55,13 +57,7 @@ public class Song {
    * @return The time this song was last played by any station
    */
   public int getLastPlayTime() {
-    int lastTime = 0;
-    for (int time : _lastPlayOnStation) {
-      if (time > lastTime) {
-        lastTime = time;
-      }
-    }
-    return lastTime;
+    return _lastPlayed;
   }
   
   /**
@@ -78,6 +74,7 @@ public class Song {
     _stations[index].incrementLogLength();
     _stationPlays[index]++;
     _lastPlayOnStation[index] = time;
+    _lastPlayed = time > _lastPlayed ? time : _lastPlayed;
   }
 
   /**

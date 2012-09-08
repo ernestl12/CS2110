@@ -6,8 +6,9 @@ import java.io.InputStreamReader;
 
 public class RadioRecommenderSystem {
   
-  private Song[] songList;
-  private Station[] stationList;
+  private Song[] _songList;
+  private Station[] _stationList;
+  private int _currentTime;
 
   /**
    * Initializes the Parser and the RadioRecommenderSystem. Asks for user input through the console afterwards.
@@ -61,20 +62,21 @@ public class RadioRecommenderSystem {
         } else if (command.equalsIgnoreCase("lastheardon")) {
         } else if (command.equalsIgnoreCase("lastplayed")) {
         } else if (command.equalsIgnoreCase("recommend")) {
-        } else if (command.equalsIgnoreCase("similarsong")) {
-        } else if (command.equalsIgnoreCase("similarsong")) {
-        } else if (command.equalsIgnoreCase("similarsong")) {
+        } else if (command.equalsIgnoreCase("exit") ||
+                   command.equalsIgnoreCase("quit") ||
+                   command.equalsIgnoreCase("q")) {
+        } else if (command.equalsIgnoreCase("help") || command.equalsIgnoreCase("h")) {
         }
         try {
           System.out.print("> ");
           userInput = inputReader.readLine();
         } catch (IOException e) {
-          System.err.println("IOException: " + e.getMessage());
+          System.out.println("Input unrecognized. Type 'help' for a list of commands.");
           userInput = "";
         }
       }
     } catch (IOException e) {
-      System.err.println("IOException: " + e.getMessage());
+      System.out.println("Whoops! Something went wrong. Exiting...");
     }
   }
   
@@ -88,7 +90,7 @@ public class RadioRecommenderSystem {
       String userInput = reader.readLine();
       return userInput;
     } catch (IOException e) {
-      System.err.println("IOException: " + e.getMessage());
+      System.out.println("Input unrecognized.");
       return "";
     }
   }
@@ -112,8 +114,15 @@ public class RadioRecommenderSystem {
    * @param stations
    */
   public RadioRecommenderSystem(Song[] songs, Station[] stations) {
-    songList = songs;
-    stationList = stations;
+    _songList = songs;
+    _stationList = stations;
+    
+    int plays = 0;
+    for (Song s : _songList) {
+      plays = s.getLastPlayTime() > plays ? s.getLastPlayTime() : plays;
+    }
+    
+    _currentTime = plays++;
   }
 
   /**
@@ -121,7 +130,7 @@ public class RadioRecommenderSystem {
    * @return The current time of this recommendation system.
    */
   public int getCurTime() {
-    return 0;
+    return _currentTime;
   }
 
   /**
@@ -129,6 +138,7 @@ public class RadioRecommenderSystem {
    * @param curTime The time to be set
    */
   public void setCurTime(int curTime) {
+    _currentTime = curTime;
   }
 
   /**
@@ -149,6 +159,8 @@ public class RadioRecommenderSystem {
    * @return Double representing the similarity between the songs
    */
   public double songSimilarity(Song s1, Song s2) {
+    
+    
     return 0;
   }
 
