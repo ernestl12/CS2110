@@ -1,9 +1,12 @@
+/* List of things to do:
+ * 
+ */
+
 package cs2110.ewy7.assignment1;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-// import java.util.Arrays;
 
 public class Parser {  
   
@@ -29,16 +32,21 @@ public class Parser {
    * IDs are in no particular order.
    */
   public Parser(String path, String songFilename, String stationFilename) {
-    _filePath = path;
+    // Compatible for both Windows & *nix Operating Systems!
+    _filePath = path + File.separator;
     
-    File songFile = new File(path, songFilename);
     File stationFile = new File(path, stationFilename);
+    File songFile = new File(path, songFilename);
     
     try {
       
-      // Following code rolled out rather than placed in a function due to
-      // casting difficulties (i.e., function would have to operate on and
-      // return a generic Object[] variable, requiring up & downcasting
+      /* Following code rolled out rather than placed in a function due to
+       * casting difficulties (i.e., function would have to operate on and
+       * return a generic Object[] variable, requiring up & downcasting
+       *
+       * Stations processed prior to Songs because each Song object must have
+       * full access to all the stations.
+       */
       Scanner stationReader = new Scanner(stationFile);
       int numStations = Integer.parseInt(stationReader.nextLine());
       _stations = new Station[numStations];
@@ -87,18 +95,16 @@ public class Parser {
     try {
       Scanner logReader = new Scanner(logFile);
       
-      // TODO: Implement Log parsing method
       while (logReader.hasNext()) {
         String[] logEntry = logReader.nextLine().split(";");
         int stationID = Integer.parseInt(logEntry[0]);
         int songID = Integer.parseInt(logEntry[1]);
         
-        for (int i = 0; i < _songs.length; i++) {
-          if (_songs[i].getID() == songID) {
-            _songs[i].addPlay(stationID, logTime + curTime);
-            break;
-          }
+        int i = 0; 
+        while (i < _songs.length && _songs[i].getID() != songID) {
+          i++;
         }
+        _songs[i].addPlay(stationID, logTime + curTime);
         
         logTime++;
       }
@@ -144,7 +150,6 @@ public class Parser {
   }
 
   public Song[] getSongs() {
-    
     return _songs;
   }
 
