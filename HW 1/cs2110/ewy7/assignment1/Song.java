@@ -47,6 +47,12 @@ public class Song {
   }
 
   public void addPlay(int stationId, int time) {
+    for (int i = 0; i < _stations.length; i++) {
+      if (_stations[i].getID() == stationId) {
+        _stations[i].incrementLogLength();
+        break;
+      }
+    }
   }
 
   /* The returned array should be in this order:
@@ -59,19 +65,38 @@ public class Song {
    * ]
    */
   public int[] getStatistics() {
-    int avg, plays, mostPlayedStationID, maxPlays, leastPlayedStationID, minPlays;
+    int avg = 0,
+        stationsThatPlayThisSong = 0,
+        plays = 0,
+        mostPlayedStationID = 0, 
+        maxPlays = 0,
+        leastPlayedStationID = 0,
+        minPlays = 1000;
     
-    avg = 0;
-    plays = 0;
-    mostPlayedStationID = 0;
-    maxPlays = 0;
-    leastPlayedStationID = 0;
-    minPlays = 0;
-    
+    for (Station s : _stations) {
+      int stationPlays = s.getLogLength();
+      plays += stationPlays;
+      if (stationPlays > 0) {
+        stationsThatPlayThisSong++;
+      }
+      
+      if (stationPlays > maxPlays) {
+        maxPlays = stationPlays;
+        mostPlayedStationID = s.getID();
+      } else if (stationPlays == maxPlays && s.getID() < mostPlayedStationID) {
+        mostPlayedStationID = s.getID();
+      }
+      
+      if (stationPlays < minPlays) {
+        minPlays = stationPlays;
+        leastPlayedStationID = s.getID();
+      } else if (stationPlays == minPlays && s.getID() > leastPlayedStationID) {
+        leastPlayedStationID = s.getID();
+      }
+    }
+    avg = plays / stationsThatPlayThisSong;
+
     int[] stats = {avg, plays, mostPlayedStationID, maxPlays, leastPlayedStationID, minPlays};
-    
-    
-    
     return stats;
   }
 

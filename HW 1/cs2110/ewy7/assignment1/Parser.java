@@ -7,10 +7,9 @@ import java.util.Scanner;
 
 public class Parser {  
   
-  private String defaultPath;
-  // private int numSongs, numStations;
-  private Song[] songs;
-  private Station[] stations;
+  private String _filePath;
+  private Song[] _songs;
+  private Station[] _stations;
   
   /* We are given the following format for 
    * 
@@ -30,7 +29,7 @@ public class Parser {
    * IDs are in no particular order.
    */
   public Parser(String path, String songFilename, String stationFilename) {
-    defaultPath = path;
+    _filePath = path;
     
     File songFile = new File(path, songFilename);
     File stationFile = new File(path, stationFilename);
@@ -40,56 +39,18 @@ public class Parser {
       // Following code rolled out rather than placed in a function due to
       // casting difficulties (i.e., function would have to operate on and
       // return a generic Object[] variable, requiring up & downcasting
-      Scanner songReader = new Scanner(songFile);
       Scanner stationReader = new Scanner(stationFile);
-      
-      int numSongs = Integer.parseInt(songReader.nextLine());
       int numStations = Integer.parseInt(stationReader.nextLine());
-      
-      int[] songIDs = new int[numSongs]; 
-      int[] stationIDs = new int[numStations];
-      
-      Song[] tempSongs = new Song[numSongs];
-      Station[] tempStations = new Station[numStations];
-      
-      // Find max ID numbers for Songs & Stations
-      for (int songNum = 0; songNum < numSongs; songNum++) {
-        tempSongs[songNum] = parseOneSong(songReader.nextLine(), 0);
-        songIDs[songNum] = tempSongs[songNum].getID();
-      }
+      _stations = new Station[numStations];
       for (int stationNum = 0; stationNum < numStations; stationNum++) {
-        tempStations[stationNum] = parseOneStation(stationReader.nextLine());
-        stationIDs[stationNum] = tempStations[stationNum].getID();
+        _stations[stationNum] = parseOneStation(stationReader.nextLine());
       }
       
-      // Sorting implementation with java.util.Arrays
-      /* Arrays.sort(songIDs);
-       * Arrays.sort(stationsIDs);
-       * 
-       */
-      
-      int maxSongID = 0;
-      int maxStationID = 0;
-      
-      for (int a : songIDs) {
-        if (a > maxSongID) {
-          maxSongID = a;
-        }
-      }
-      for (int a : stationIDs) {
-        if (a > maxStationID) {
-          maxStationID = a;
-        }
-      }
-      
-      songs = new Song[maxSongID];
-      stations = new Station[maxStationID];
-      
-      for (Song a : tempSongs) {
-        songs[a.getID() - 1] = a;
-      }
-      for (Station b : tempStations) {
-        stations[b.getID() - 1] = b;
+      Scanner songReader = new Scanner(songFile);
+      int numSongs = Integer.parseInt(songReader.nextLine());
+      _songs = new Song[numSongs];
+      for (int songNum = 0; songNum < numSongs; songNum++) {
+        _songs[songNum] = parseOneSong(songReader.nextLine(), _stations);
       }
       
       songReader.close();
@@ -119,7 +80,7 @@ public class Parser {
    * @return The current time after importing the log
    */
   public int processSongLog(String logFilename, int curTime) {
-    File logFile = new File(defaultPath, logFilename);
+    File logFile = new File(_filePath, logFilename);
     
     int logTime = 0;
     
@@ -128,7 +89,17 @@ public class Parser {
       
       // TODO: Implement Log parsing method
       while (logReader.hasNext()) {
-        logReader.next();
+        String[] logEntry = logReader.nextLine().split(";");
+        int stationID = Integer.parseInt(logEntry[0]);
+        int songID = Integer.parseInt(logEntry[1]);
+        
+        for (int i = 0; i < _songs.length; i++) {
+          if (_songs[i].getID() == songID) {
+            _songs[i].addPlay(stationID, logTime + curTime);
+            break;
+          }
+        }
+        
         logTime++;
       }
       
@@ -157,7 +128,7 @@ public class Parser {
     return parsedStation;
   }
 
-  public Song parseOneSong(String line, int numberOfStations) {
+  public Song parseOneSong(String line, Station[] stations) {
     String[] data = line.split(";");
     for (int i = 0; i < data.length; i++) {
       data[i] = data[i].trim();
@@ -167,18 +138,18 @@ public class Parser {
     String artist = data[1];
     int ID = Integer.parseInt(data[2]);
     
-    Song parsedSong = new Song(name, artist, ID, new Station[numberOfStations]);
+    Song parsedSong = new Song(name, artist, ID, stations);
     
     return parsedSong;
   }
 
   public Song[] getSongs() {
     
-    return songs;
+    return _songs;
   }
 
   public Station[] getStations() {
-    return stations;
+    return _stations;
   }
 
 }
