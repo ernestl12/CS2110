@@ -37,6 +37,19 @@ public class Song {
   public int getID() {
     return _ID;
   }
+  
+  public int[] getPlays() {
+    return _stationPlays;
+  }
+  
+  public int getPlaysByStation(int stationID) {
+    int index = 0;
+    while (index < _stations.length && _stations[index].getID() != stationID) {
+      index++;
+    }
+    int plays = _stationPlays[index];
+    return plays;
+  }
 
   /**
    * Returns the time this song was last played by the given station.

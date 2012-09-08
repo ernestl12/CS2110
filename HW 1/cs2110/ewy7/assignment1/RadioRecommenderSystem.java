@@ -9,6 +9,7 @@ public class RadioRecommenderSystem {
   private Song[] _songList;
   private Station[] _stationList;
   private int _currentTime;
+  private int[] _songsPlayedPerStation;
 
   /**
    * Initializes the Parser and the RadioRecommenderSystem. Asks for user input through the console afterwards.
@@ -28,8 +29,6 @@ public class RadioRecommenderSystem {
     String filepath = args[0];
     
     BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
-    String[] recognizedCommands = {"", "importlog", "similarsong", "similarradio", 
-        "stats", "lastheardon", "lastplayed", "recommend", "exit", "quit", "help", "h"};
     
     System.out.print("Welcome to the Radio Recommender System!\n\n" +
                      "Before we begin, I'll need to import your songs, radio stations, and play history.\n\n" +
@@ -65,7 +64,13 @@ public class RadioRecommenderSystem {
         } else if (command.equalsIgnoreCase("exit") ||
                    command.equalsIgnoreCase("quit") ||
                    command.equalsIgnoreCase("q")) {
+          System.out.println("See you next time!");
+          continue;
         } else if (command.equalsIgnoreCase("help") || command.equalsIgnoreCase("h")) {
+        } else {
+          if (!(command.trim().equalsIgnoreCase(""))) {
+            System.out.println("Input unrecognized. Type 'help' for a list of commands.");
+          }
         }
         try {
           System.out.print("> ");
@@ -104,7 +109,7 @@ public class RadioRecommenderSystem {
                        "lastheardon <station ID> <song ID>   Finds the most recent time the song is played on the station.\n" +
                        "lastplayed <song ID>                 Finds the most recent time the song is played on any station.\n" +
                        "recommend <station ID>               Recommends a song to the chosen station.\n" +
-                       "exit, quit                           Exits the program.\n\n" +
+                       "exit, quit, q                        Exits the program.\n\n" +
                        "To display this message again, type \"help\"\n.");
   }
 
@@ -123,6 +128,13 @@ public class RadioRecommenderSystem {
     }
     
     _currentTime = plays++;
+    
+    _songsPlayedPerStation = new int[_stationList.length];
+    for (int i = 0; i < _stationList.length; i++) {
+      for (Song s : _songList) {
+        _songsPlayedPerStation[i] += s.getPlays()[i];
+      }
+    }
   }
 
   /**
@@ -149,19 +161,73 @@ public class RadioRecommenderSystem {
    * @throws IncorrectSongIDException
    */
   public Song closestSong(int songID) throws InsufficientSongsException, IncorrectSongIDException {
-    return null;
+    // TODO: Throw exceptions
+    Song original = null;
+    for (Song s : _songList) {
+      if (s.getID() == songID) {
+        original = s;
+      }
+    }
+    
+    if (original == null) {
+      throw new IncorrectSongIDException(songID);
+    }
+    
+    double maxSimilarity = 0;
+    Song mostSimilarSong = null;
+    for (Song s : _songList) {
+      double similarity = songSimilarity(original, s);
+      if (similarity > maxSimilarity) {
+        maxSimilarity = similarity;
+        mostSimilarSong = s;
+      } else if (similarity == maxSimilarity && s.getID() < mostSimilarSong.getID()) {
+        mostSimilarSong = s;
+      }
+    }
+    return mostSimilarSong;
   }
 
   /**
    * Computes the similarity of two given songs
+   * 
+   * @pre s1 & s2 must have been played a minimum of 1 time
    * @param s1 First song
    * @param s2 Second song
    * @return Double representing the similarity between the songs
    */
   public double songSimilarity(Song s1, Song s2) {
+
+    int[] s1Plays = s1.getPlays();
+    int[] s2Plays = s2.getPlays();
     
+    return calculateSimilarity(s1Plays, s2Plays);
+  }
+  
+  /**
+   * Helper method to calculate similarity between two arrays of integers.
+   * 
+   * Based on vector sum similarity algorithm given in PDF.
+   * @param s1, s2 int arrays of identical length
+   * @return vector similarity between the two arrays, 0 <= t <= 1
+   */
+  private double calculateSimilarity(int[] s1, int[] s2) {
+    double productSum = 0;
+    for (int i = 0; i < s1.length; i++) {
+      productSum += s1[i] * s2[i];
+    }
     
-    return 0;
+    double s1Distance = 0;
+    double s2Distance = 0;
+    for (int p : s1) {
+      s1Distance += Math.pow(p, 2);
+    }
+    for (int p : s2) {
+      s2Distance += Math.pow(p, 2);
+    }
+    
+    double result = productSum / (Math.sqrt(s1Distance) * Math.sqrt(s2Distance));
+    
+    return result;
   }
 
   /**
@@ -172,7 +238,30 @@ public class RadioRecommenderSystem {
    * @throws IncorrectStationIDException
    */
   public Station closestStation(int radioID)  throws InsufficientStationsException, IncorrectStationIDException {
-    return null;
+    // TODO: Throw exceptions
+    Station original = null;
+    for (Station s : _stationList) {
+      if (s.getID() == radioID) {
+        original = s;
+      }
+    }
+    
+    if (original == null) {
+      throw new IncorrectStationIDException(radioID);
+    }
+    
+    double maxSimilarity = 0;
+    Station mostSimilarStation = null;
+    for (Station s : _stationList) {
+      double similarity = stationSimilarity(original, s);
+      if (similarity > maxSimilarity) {
+        maxSimilarity = similarity;
+        mostSimilarStation = s;
+      } else if (similarity == maxSimilarity && s.getID() < mostSimilarStation.getID()) {
+        mostSimilarStation = s;
+      }
+    }
+    return mostSimilarStation;
   }
 
   /**
@@ -182,7 +271,17 @@ public class RadioRecommenderSystem {
    * @return Double representing the similarity between the stations
    */
   public double stationSimilarity(Station s1, Station s2) {
-    return 0;
+    int s1ID = s1.getID();
+    int s2ID = s2.getID();
+    
+    int[] s1Plays = new int[_songList.length];
+    int[] s2Plays = new int[_songList.length];
+    for (int i = 0; i < _songList.length; i++) {
+      s1Plays[i] = _songList[0].getPlaysByStation(s1ID);
+      s2Plays[i] = _songList[0].getPlaysByStation(s2ID);
+    }
+    
+    return calculateSimilarity(s1Plays, s2Plays);
   }
 
   /**
@@ -205,6 +304,46 @@ public class RadioRecommenderSystem {
    * @throws IncorrectSongIDException
    */
   public double makeRecommendation(int radioID, int recSongID) throws IncorrectStationIDException, IncorrectSongIDException {
+    Station targetStation = null;
+    Song targetSong = null;
+    
+    for (Song s : _songList) {
+      if (s.getID() == recSongID) {
+        targetSong = s;
+      }
+    }
+    if (targetSong == null) {
+      throw new IncorrectSongIDException(recSongID);
+    }
+    
+    for (Station s : _stationList) {
+      if (s.getID() == radioID) {
+        targetStation = s;
+      }
+    }
+    if (targetStation == null) {
+      throw new IncorrectStationIDException(radioID);
+    }
+    
+    double avgPlaysPerSong = 0;
+    for (Song s : _songList) {
+      avgPlaysPerSong += s.getPlaysByStation(radioID);
+    }
+    avgPlaysPerSong /= _songList.length;
+    
+    int lastPlayed = targetSong.getLastPlayed(radioID);
+    int playsOnStation = targetSong.getPlaysByStation(radioID);
+    
+    int curTime = 0;
+    for (Song s : _songList) {
+      curTime = s.getLastPlayTime() > curTime ? s.getLastPlayTime() : curTime;
+    }
+    
+    double avgPlaysOnTargetStation = targetSong.getPlaysByStation(radioID);
+    
+    
+    double multFactor = Math.pow(Math.E, -1 / Math.sqrt(curTime + 1 - lastPlayed));
+    
     return 0;
   }
 
