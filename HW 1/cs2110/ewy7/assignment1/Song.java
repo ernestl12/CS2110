@@ -141,8 +141,8 @@ public class Song {
       }
     }
     
-    // Calculate integer average of plays
-    avg = plays / stationsThatPlayThisSong;
+    // Calculate integer average of plays; 0 if song is never played on any station
+    avg = stationsThatPlayThisSong == 0 ? 0 : plays / stationsThatPlayThisSong;
 
     int[] stats = {avg, plays, mostPlayedStationID, maxPlays, leastPlayedStationID, minPlays};
     return stats;
