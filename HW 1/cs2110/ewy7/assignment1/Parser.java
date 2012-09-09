@@ -1,7 +1,3 @@
-/* List of things to do:
- * 
- */
-
 package cs2110.ewy7.assignment1;
 
 import java.io.File;
