@@ -26,7 +26,8 @@ public class RadioRecommenderSystem {
    * @param args The first argument should contain the folder path for the three files. 
    */
   public static void main(String[] args) {
-    String filepath = args[0];
+//    String filepath = args[0];
+    String filepath = ".";
     
     BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
     
@@ -77,7 +78,7 @@ public class RadioRecommenderSystem {
                 int songID = Integer.parseInt(input[1]);
                 Song similarSong = recommender.closestSong(songID);
                 Song originalSong = findSong(songID, logParser);
-                System.out.println("The most similar song to " + originalSong + " is " + similarSong);
+                System.out.println("The most similar song to " + originalSong + " is " + similarSong + ".\n");
               } catch (NumberFormatException e) {
                 System.out.println("I'm confused. What's ID #" + input[1] + "?\n");
               } catch (InsufficientSongsException e) {
@@ -123,8 +124,8 @@ public class RadioRecommenderSystem {
                   System.out.println("Stats for " + targetSong + ":\n" +
                       "Average plays: " + songStats[0] + "\n" + 
                       "Total plays: " + songStats[1] + "\n" +
-                      "Most played on station: " + songStats[2] + " with " + songStats[3] + "plays\n" + 
-                      "Least played on station: " + songStats[4] + " with " + songStats[5] + "plays\n");
+                      "Most played on station: " + songStats[2] + " with " + songStats[3] + " plays\n" + 
+                      "Least played on station: " + songStats[4] + " with " + songStats[5] + " plays\n");
                 }
               } catch (NumberFormatException e) {
                 System.out.println("I'm confused. What's ID #" + input[1] + "?\n");
@@ -205,7 +206,7 @@ public class RadioRecommenderSystem {
           else if (command.equalsIgnoreCase("exit") ||
               command.equalsIgnoreCase("quit") ||
               command.equalsIgnoreCase("q")) {
-            System.out.println("See you next time!");
+            System.out.println("Goodbye!");
             continue;
           }
           else if (command.equalsIgnoreCase("help") || command.equalsIgnoreCase("h")) {
@@ -255,7 +256,7 @@ public class RadioRecommenderSystem {
                        "lastplayed <song ID>                 Finds the most recent time the song is played on any station.\n" +
                        "recommend <station ID>               Recommends a song to the chosen station.\n" +
                        "exit, quit, q                        Exits the program.\n\n" +
-                       "To display this message again, type \"help\"\n.");
+                       "To display this message again, type \"help\".");
   }
   
   // Helper functions to find a song or station in the Parser's songs & stations lists
@@ -345,6 +346,9 @@ public class RadioRecommenderSystem {
     double maxSimilarity = 0;
     Song mostSimilarSong = null;
     for (Song s : _songList) {
+      if (s.getID() == songID) {
+        continue;
+      }
       double similarity = songSimilarity(original, s);
       if (similarity > maxSimilarity) {
         maxSimilarity = similarity;
@@ -425,6 +429,9 @@ public class RadioRecommenderSystem {
     double maxSimilarity = 0;
     Station mostSimilarStation = null;
     for (Station s : _stationList) {
+      if (s.getID() == radioID) {
+        continue;
+      }
       double similarity = stationSimilarity(original, s);
       if (similarity > maxSimilarity) {
         maxSimilarity = similarity;
