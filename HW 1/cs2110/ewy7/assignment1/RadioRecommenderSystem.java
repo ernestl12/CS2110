@@ -111,7 +111,7 @@ public class RadioRecommenderSystem {
               } catch (NumberFormatException e) {
                 System.err.println("I'm confused. What's ID #" + input[1] + "?");
               } catch (InsufficientStationsException e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
               } catch (IncorrectStationIDException e) {
                 System.err.println(e.getMessage());
               }
@@ -130,10 +130,10 @@ public class RadioRecommenderSystem {
                   System.out.println("Song with ID #" + songID + " doesn't exist.");
                 } else {
                   int[] songStats = targetSong.getStatistics();
-                  System.out.println("Stats for " + targetSong + ":" +
-                      "Average plays: " + songStats[0] + 
-                      "Total plays: " + songStats[1] +
-                      "Most played on station: " + songStats[2] + " with " + songStats[3] + " plays" + 
+                  System.out.println("Stats for " + targetSong + ":\n" +
+                      "Average plays: " + songStats[0] + "\n" +
+                      "Total plays: " + songStats[1] + "\n" +
+                      "Most played on station: " + songStats[2] + " with " + songStats[3] + " plays" + "\n" + 
                       "Least played on station: " + songStats[4] + " with " + songStats[5] + " plays");
                 }
               } catch (NumberFormatException e) {
@@ -590,7 +590,7 @@ public class RadioRecommenderSystem {
     }
     int lastPlayed = targetSong.getLastPlayed(radioID);
     double multFactor = Math.pow(Math.E, -1 / Math.sqrt(curTime + 1 - lastPlayed));
-    int playsOnStation = targetSong.getPlaysByStation(radioID);
+    double avgPlaysOnStation = targetSong.getPlaysByStation(radioID) / ((double) _songList.length);
     
     double numerator = 0;
     double denominator = 0;
@@ -599,7 +599,7 @@ public class RadioRecommenderSystem {
       denominator += stationSim[i];
     }
     
-    double recommendation = multFactor * (playsOnStation + numerator / denominator);
+    double recommendation = multFactor * (avgPlaysOnStation + numerator / denominator);
     return recommendation;
   }
 
