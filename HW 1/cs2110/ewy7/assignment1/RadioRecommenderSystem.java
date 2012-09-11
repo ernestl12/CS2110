@@ -49,6 +49,7 @@ public class RadioRecommenderSystem {
         RadioRecommenderSystem recommender = 
             new RadioRecommenderSystem(logParser.getSongs(), logParser.getStations());
         
+        boolean playLogProcessed = false;
         userInput = initializeSystem(inputReader);
         while (!(userInput.equalsIgnoreCase("quit") ||
             userInput.equalsIgnoreCase("exit") || 
@@ -65,10 +66,13 @@ public class RadioRecommenderSystem {
             } else {
               logParser.processSongLog(input[1], recommender.getCurTime());
               System.out.println("Song log \"" + input[1] + "\" processed.\n");
+              playLogProcessed = true;
             }
           }
           else if (command.equalsIgnoreCase("similarsong")) {
-            if (input.length < 2) {
+            if (!playLogProcessed) {
+              System.out.println("I can't do that without a play log.");
+            } else if (input.length < 2) {
               System.out.println("Sorry, I'll need a song ID to find a similar song.\n");
             } else if (input.length > 2) {
               System.out.println("Sorry, I don't know which song you want me find a similar song for.\n");
@@ -88,7 +92,9 @@ public class RadioRecommenderSystem {
             }
           }
           else if (command.equalsIgnoreCase("similarradio")) {
-            if (input.length < 2) {
+            if (!playLogProcessed) {
+              System.out.println("I can't do that without a play log.");
+            } else if (input.length < 2) {
               System.out.println("Sorry, I'll need a station ID to find a similar station.\n");
             } else if (input.length > 2) {
               System.out.println("Sorry, I don't know which station you want me find a similar station for.\n");
@@ -132,7 +138,9 @@ public class RadioRecommenderSystem {
             }
           }
           else if (command.equalsIgnoreCase("lastheardon")) {
-            if (input.length < 3) {
+            if (!playLogProcessed) {
+              System.out.println("I can't do that without a play log.");
+            } else if (input.length < 3) {
               System.out.println("Sorry, I'll need a song AND station ID to find that.\n");
             } else if (input.length > 3) {
               System.out.println("Sorry, I only take one song ID and one station ID.\n");
@@ -157,7 +165,9 @@ public class RadioRecommenderSystem {
             }
           }
           else if (command.equalsIgnoreCase("lastplayed")) {
-            if (input.length < 2) {
+            if (!playLogProcessed) {
+              System.out.println("I can't do that without a play log.");
+            } else if (input.length < 2) {
               System.out.println("Sorry, I'll need a song ID to do this.\n");
             } else if (input.length > 2) {
               System.out.println("Sorry, I don't know which song you want.\n");
@@ -176,7 +186,9 @@ public class RadioRecommenderSystem {
             }
           }
           else if (command.equalsIgnoreCase("recommend")) {
-            if (input.length < 2) {
+            if (!playLogProcessed) {
+              System.out.println("I can't do that without a play log.");
+            } else if (input.length < 2) {
               System.out.println("Sorry, I'll need a song ID to do this.\n");
             } else if (input.length > 2) {
               System.out.println("Sorry, I don't know which song you want.\n");
@@ -205,7 +217,6 @@ public class RadioRecommenderSystem {
           else if (command.equalsIgnoreCase("exit") ||
               command.equalsIgnoreCase("quit") ||
               command.equalsIgnoreCase("q")) {
-            System.out.println("Goodbye!");
             continue;
           }
           else if (command.equalsIgnoreCase("help") || command.equalsIgnoreCase("h")) {
@@ -228,6 +239,8 @@ public class RadioRecommenderSystem {
         System.out.println("Whoops! Something went wrong. Let's do that again.");
       }
     } while (userInput.equals(""));
+    
+    System.out.println("Goodbye!");
   }
   
   private static String initializeSystem(BufferedReader reader) {
