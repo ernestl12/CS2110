@@ -61,7 +61,7 @@ public class Parser {
       stationReader.close();
     }
     catch (FileNotFoundException e) {
-      System.err.println("FileNotFoundException: " + e.getMessage());
+      System.err.println("I couldn't find your file. Does it exist?");
     }
   }
 
@@ -107,7 +107,7 @@ public class Parser {
       
       logReader.close();
     } catch (FileNotFoundException e) {
-      System.err.println("FileNotFoundException: " + e.getMessage());
+      System.err.println("I couldn't find your file. Does it exist?");
       return curTime;
     }
     

@@ -30,8 +30,8 @@ public class RadioRecommenderSystem {
     
     BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
     
-    System.out.print("Welcome to the Radio Recommender System!\n\n" +
-                     "Before we begin, I'll need to import your songs, radio stations, and play history.\n\n" +
+    System.out.print("Welcome to the Radio Recommender System!\n" +
+                     "Before we begin, I'll need to import your songs, radio stations, and play history.\n" +
                      "What's the name of your song file?\n> ");
     
     String userInput = "";
@@ -60,34 +60,38 @@ public class RadioRecommenderSystem {
           
           if (command.equalsIgnoreCase("importlog")) {
             if (input.length < 2) {
-              System.out.println("Sorry, I don't see a log name to import.\n");
+              System.out.println("Sorry, I don't see a log name to import.");
             } else if (input.length > 2) {
-              System.out.println("Sorry, I'm not sure what log you want me to import.\n");
+              System.out.println("Sorry, I'm not sure what log you want me to import.");
             } else {
-              logParser.processSongLog(input[1], recommender.getCurTime());
-              System.out.println("Song log \"" + input[1] + "\" processed.\n");
-              playLogProcessed = true;
+              int result = logParser.processSongLog(input[1], recommender.getCurTime());
+              if (result > recommender.getCurTime()) {
+                System.out.println("Song log \"" + input[1] + "\" processed.");
+                playLogProcessed = true;
+              } else {
+                System.out.println("Song log \"" + input[1] + "\" could not be processed.");
+              }
             }
           }
           else if (command.equalsIgnoreCase("similarsong")) {
             if (!playLogProcessed) {
               System.out.println("I can't do that without a play log.");
             } else if (input.length < 2) {
-              System.out.println("Sorry, I'll need a song ID to find a similar song.\n");
+              System.out.println("Sorry, I'll need a song ID to find a similar song.");
             } else if (input.length > 2) {
-              System.out.println("Sorry, I don't know which song you want me find a similar song for.\n");
+              System.out.println("Sorry, I don't know which song you want me find a similar song for.");
             } else {
               try {
                 int songID = Integer.parseInt(input[1]);
                 Song similarSong = recommender.closestSong(songID);
                 Song originalSong = findSong(songID, logParser);
-                System.out.println("The most similar song to " + originalSong + " is " + similarSong + ".\n");
+                System.out.println("The most similar song to " + originalSong + " is " + similarSong + ".");
               } catch (NumberFormatException e) {
-                System.out.println("I'm confused. What's ID #" + input[1] + "?\n");
+                System.err.println("I'm confused. What's ID #" + input[1] + "?");
               } catch (InsufficientSongsException e) {
-                System.out.println(e.getMessage() + "\n");
+                System.err.println(e.getMessage());
               } catch (IncorrectSongIDException e) {
-                System.out.println(e.getMessage() + "\n");
+                System.err.println(e.getMessage());
               }
             }
           }
@@ -95,9 +99,9 @@ public class RadioRecommenderSystem {
             if (!playLogProcessed) {
               System.out.println("I can't do that without a play log.");
             } else if (input.length < 2) {
-              System.out.println("Sorry, I'll need a station ID to find a similar station.\n");
+              System.out.println("Sorry, I'll need a station ID to find a similar station.");
             } else if (input.length > 2) {
-              System.out.println("Sorry, I don't know which station you want me find a similar station for.\n");
+              System.out.println("Sorry, I don't know which station you want me find a similar station for.");
             } else {
               try {
                 int stationID = Integer.parseInt(input[1]);
@@ -105,19 +109,19 @@ public class RadioRecommenderSystem {
                 Station originalStation = findStation(stationID, logParser);
                 System.out.println("The most similar station to " + originalStation + " is " + similarStation);
               } catch (NumberFormatException e) {
-                System.out.println("I'm confused. What's ID #" + input[1] + "?\n");
+                System.err.println("I'm confused. What's ID #" + input[1] + "?");
               } catch (InsufficientStationsException e) {
-                System.out.println(e.getMessage() + "\n");
+                System.out.println(e.getMessage());
               } catch (IncorrectStationIDException e) {
-                System.out.println(e.getMessage() + "\n");
+                System.err.println(e.getMessage());
               }
             }
           }
           else if (command.equalsIgnoreCase("stats")) {
             if (input.length < 2) {
-              System.out.println("Sorry, I'll need a song ID to find a stats.\n");
+              System.out.println("Sorry, I'll need a song ID to find stats.");
             } else if (input.length > 2) {
-              System.out.println("Sorry, I don't know which song you want to find stats for.\n");
+              System.out.println("Sorry, I don't know which song you want to find stats for.");
             } else {
               try {
                 int songID = Integer.parseInt(input[1]);
@@ -126,14 +130,14 @@ public class RadioRecommenderSystem {
                   System.out.println("Song with ID #" + songID + " doesn't exist.");
                 } else {
                   int[] songStats = targetSong.getStatistics();
-                  System.out.println("Stats for " + targetSong + ":\n" +
-                      "Average plays: " + songStats[0] + "\n" + 
-                      "Total plays: " + songStats[1] + "\n" +
-                      "Most played on station: " + songStats[2] + " with " + songStats[3] + " plays\n" + 
-                      "Least played on station: " + songStats[4] + " with " + songStats[5] + " plays\n");
+                  System.out.println("Stats for " + targetSong + ":" +
+                      "Average plays: " + songStats[0] + 
+                      "Total plays: " + songStats[1] +
+                      "Most played on station: " + songStats[2] + " with " + songStats[3] + " plays" + 
+                      "Least played on station: " + songStats[4] + " with " + songStats[5] + " plays");
                 }
               } catch (NumberFormatException e) {
-                System.out.println("I'm confused. What's ID #" + input[1] + "?\n");
+                System.err.println("I'm confused. What's ID #" + input[1] + "?");
               }
             }
           }
@@ -141,9 +145,9 @@ public class RadioRecommenderSystem {
             if (!playLogProcessed) {
               System.out.println("I can't do that without a play log.");
             } else if (input.length < 3) {
-              System.out.println("Sorry, I'll need a song AND station ID to find that.\n");
+              System.out.println("Sorry, I'll need a song AND station ID to find that.");
             } else if (input.length > 3) {
-              System.out.println("Sorry, I only take one song ID and one station ID.\n");
+              System.out.println("Sorry, I only take one song ID and one station ID.");
             } else {
               try {
                 int stationID = Integer.parseInt(input[1]);
@@ -157,10 +161,10 @@ public class RadioRecommenderSystem {
                   System.out.println("Station with ID #" + stationID + " doesn't exist.");
                 } else {
                   int time = targetSong.getLastPlayed(stationID);
-                  System.out.println(targetSong + " was last played on " + targetStation + " at time " + time + ".\n");
+                  System.out.println(targetSong + " was last played on " + targetStation + " at time " + time + ".");
                 }
               } catch (NumberFormatException e) {
-                System.out.println("One of these IDs looks fishy to me, so I'm not following your command.\n");
+                System.err.println("One of these IDs looks fishy to me, so I'm not following your command.");
               }
             }
           }
@@ -168,9 +172,9 @@ public class RadioRecommenderSystem {
             if (!playLogProcessed) {
               System.out.println("I can't do that without a play log.");
             } else if (input.length < 2) {
-              System.out.println("Sorry, I'll need a song ID to do this.\n");
+              System.out.println("Sorry, I'll need a song ID to do this.");
             } else if (input.length > 2) {
-              System.out.println("Sorry, I don't know which song you want.\n");
+              System.out.println("Sorry, I don't know which song you want.");
             } else {
               try {
                 int songID = Integer.parseInt(input[1]);
@@ -178,10 +182,10 @@ public class RadioRecommenderSystem {
                 if (targetSong == null) {
                   System.out.println("Song with ID #" + songID + " doesn't exist.");
                 } else {
-                  System.out.println(targetSong + " was last played at time " + targetSong.getLastPlayTime() + ".\n");
+                  System.out.println(targetSong + " was last played at time " + targetSong.getLastPlayTime() + ".");
                 }
               } catch (NumberFormatException e) {
-                System.out.println("Huh? What's ID #" + input[1] + "?\n");
+                System.err.println("Huh? What's ID #" + input[1] + "?");
               }
             }
           }
@@ -189,9 +193,9 @@ public class RadioRecommenderSystem {
             if (!playLogProcessed) {
               System.out.println("I can't do that without a play log.");
             } else if (input.length < 2) {
-              System.out.println("Sorry, I'll need a song ID to do this.\n");
+              System.out.println("Sorry, I'll need a song ID to do this.");
             } else if (input.length > 2) {
-              System.out.println("Sorry, I don't know which song you want.\n");
+              System.out.println("Sorry, I don't know which song you want.");
             } else {
               try {
                 int stationID = Integer.parseInt(input[1]);
@@ -202,15 +206,15 @@ public class RadioRecommenderSystem {
                   try {
                     Song recommendation = recommender.bestRecommendation(stationID);
                     System.out.println("I recommend that you play " + recommendation + 
-                        " on station " + targetStation + ".\n");
+                        " on station " + targetStation + ".");
                   } catch (IncorrectStationIDException e) {
-                    System.out.println(e.getMessage() + "\n");
+                    System.err.println(e.getMessage());
                   } catch (InsufficientStationsException e) {
-                    System.out.println(e.getMessage() + "\n");
+                    System.err.println(e.getMessage());
                   }
                 }
               } catch (NumberFormatException e) {
-                System.out.println("Huh? What's ID #" + input[1] + "?\n");
+                System.err.println("Huh? What's ID #" + input[1] + "?");
               }
             }
           }
@@ -220,6 +224,7 @@ public class RadioRecommenderSystem {
             continue;
           }
           else if (command.equalsIgnoreCase("help") || command.equalsIgnoreCase("h")) {
+            printHelpMessage();
           }
           else {
             if (!(command.trim().equalsIgnoreCase(""))) {
@@ -231,12 +236,12 @@ public class RadioRecommenderSystem {
             System.out.print("> ");
             userInput = inputReader.readLine();
           } catch (IOException e) {
-            System.out.println("Input unrecognized. Type 'help' for a list of commands.");
+            System.err.println("Input unrecognized. Type 'help' for a list of commands.");
             userInput = "";
           }
         }
       } catch (IOException e) {
-        System.out.println("Whoops! Something went wrong. Let's do that again.");
+        System.err.println("Whoops! Something went wrong. Let's do that again.");
       }
     } while (userInput.equals(""));
     
@@ -253,7 +258,7 @@ public class RadioRecommenderSystem {
       String userInput = reader.readLine();
       return userInput;
     } catch (IOException e) {
-      System.out.println("Input unrecognized.");
+      System.err.println("Input unrecognized.");
       return "";
     }
   }
@@ -267,7 +272,7 @@ public class RadioRecommenderSystem {
                        "lastheardon <station ID> <song ID>   Finds the most recent time the song is played on the station.\n" +
                        "lastplayed <song ID>                 Finds the most recent time the song is played on any station.\n" +
                        "recommend <station ID>               Recommends a song to the chosen station.\n" +
-                       "exit, quit, q                        Exits the program.\n\n" +
+                       "exit, quit, q                        Exits the program.\n" +
                        "To display this message again, type \"help\".");
   }
   
@@ -507,9 +512,9 @@ public class RadioRecommenderSystem {
           maxRecommendationIndex = recommendationIndex;
         }
       } catch (IncorrectStationIDException e) {
-        System.out.println(e.getMessage());
+        System.err.println(e.getMessage());
       } catch (IncorrectSongIDException e) {
-        System.out.println(e.getMessage());
+        System.err.println(e.getMessage());
       }
     }
     
