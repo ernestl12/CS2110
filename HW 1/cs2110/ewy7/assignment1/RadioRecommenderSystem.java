@@ -453,7 +453,7 @@ public class RadioRecommenderSystem {
       if (similarity > maxSimilarity) {
         maxSimilarity = similarity;
         mostSimilarStation = s;
-      } else if (similarity == maxSimilarity && s.getID() < mostSimilarStation.getID()) {
+      } else if (similarity == maxSimilarity && mostSimilarStation != null && s.getID() < mostSimilarStation.getID()) {
         mostSimilarStation = s;
       }
     }
