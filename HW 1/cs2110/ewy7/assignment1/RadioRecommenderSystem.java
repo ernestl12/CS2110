@@ -26,13 +26,14 @@ public class RadioRecommenderSystem {
    * @param args The first argument should contain the folder path for the three files. 
    */
   public static void main(String[] args) {
-    String filepath = args[0];
-    
-    BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
+//    String filepath = args[0];
+    String filepath = ".";
     
     System.out.print("Welcome to the Radio Recommender System!\n" +
-                     "Before we begin, I'll need to import your songs, radio stations, and play history.\n" +
-                     "What's the name of your song file?\n> ");
+        "Before we begin, I'll need to import your songs, radio stations, and play history.\n" +
+        "What's the name of your song file?\n> ");
+
+    BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
     
     String userInput = "";
     // Set up to loop until song & station files are successfully opened
@@ -45,6 +46,17 @@ public class RadioRecommenderSystem {
         String stationFilename = inputReader.readLine();
         
         Parser logParser = new Parser(filepath, songFilename, stationFilename);
+        
+        // Checks to make sure that the filenames for Songs and Station exist & initialized properly; else runs again
+        while (logParser.getSongs() == null) {
+          System.out.println("Let's try that again. What's the name of your song file?\n> ");
+          songFilename = inputReader.readLine();
+          
+          System.out.print("\nAnd what's the name of your stations file?\n> ");
+          stationFilename = inputReader.readLine();
+          
+          logParser = new Parser(filepath, songFilename, stationFilename);
+        }
         
         RadioRecommenderSystem recommender = 
             new RadioRecommenderSystem(logParser.getSongs(), logParser.getStations());

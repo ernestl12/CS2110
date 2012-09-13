@@ -26,7 +26,6 @@ Variables & methods/functions added:
 
 Known issues:
  - Crashes if Song, Station, and Playlog files are not properly formatted
- - Crashes if Song or Station file cannot be found due to misstyping
                                                 
 Good karma changes:
   - Will recognize bad input & print out message
