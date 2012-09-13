@@ -26,9 +26,12 @@ Variables & methods/functions added:
 
 Known issues:
  - Crashes if Song, Station, and Playlog files are not properly formatted
-                                                
+ - recommend <stationID> may not return the right result (according to [Piazza][1])                                                
+ 
 Good karma changes:
   - Will recognize bad input & print out message
   - Capitalization does not matter on commands, nor does whitespace before, after, & in between tokens
   
 For more info, you can find my entire work history @ https://github.com/edwinyoung/CS2110
+
+[1]:https://piazza.com/class#fall2012/cs2110/66
