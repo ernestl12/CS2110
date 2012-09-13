@@ -26,8 +26,7 @@ public class RadioRecommenderSystem {
    * @param args The first argument should contain the folder path for the three files. 
    */
   public static void main(String[] args) {
-//    String filepath = args[0];
-    String filepath = ".";
+    String filepath = args[0];
     
     System.out.print("Welcome to the Radio Recommender System!\n" +
         "Before we begin, I'll need to import your songs, radio stations, and play history.\n" +
