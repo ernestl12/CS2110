@@ -87,11 +87,11 @@ public class RadioRecommenderSystem {
                 Song originalSong = findSong(songID, logParser);
                 System.out.println("The most similar song to " + originalSong + " is " + similarSong + ".");
               } catch (NumberFormatException e) {
-                System.err.println("I'm confused. What's ID #" + input[1] + "?");
+                System.out.println("I'm confused. What's ID #" + input[1] + "?");
               } catch (InsufficientSongsException e) {
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
               } catch (IncorrectSongIDException e) {
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
               }
             }
           }
@@ -109,11 +109,11 @@ public class RadioRecommenderSystem {
                 Station originalStation = findStation(stationID, logParser);
                 System.out.println("The most similar station to " + originalStation + " is " + similarStation);
               } catch (NumberFormatException e) {
-                System.err.println("I'm confused. What's ID #" + input[1] + "?");
+                System.out.println("I'm confused. What's ID #" + input[1] + "?");
               } catch (InsufficientStationsException e) {
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
               } catch (IncorrectStationIDException e) {
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
               }
             }
           }
@@ -137,7 +137,7 @@ public class RadioRecommenderSystem {
                       "Least played on station: " + songStats[4] + " with " + songStats[5] + " plays");
                 }
               } catch (NumberFormatException e) {
-                System.err.println("I'm confused. What's ID #" + input[1] + "?");
+                System.out.println("I'm confused. What's ID #" + input[1] + "?");
               }
             }
           }
@@ -161,10 +161,14 @@ public class RadioRecommenderSystem {
                   System.out.println("Station with ID #" + stationID + " doesn't exist.");
                 } else {
                   int time = targetSong.getLastPlayed(stationID);
-                  System.out.println(targetSong + " was last played on " + targetStation + " at time " + time + ".");
+                  if (time == 0 && targetSong.getPlaysByStation(stationID) == 0) {
+                    System.out.println(targetSong + " has never been played on " + targetStation + ".");
+                  } else {
+                    System.out.println(targetSong + " was last played on " + targetStation + " at time " + time + ".");
+                  }
                 }
               } catch (NumberFormatException e) {
-                System.err.println("One of these IDs looks fishy to me, so I'm not following your command.");
+                System.out.println("One of these IDs looks fishy to me, so I'm not following your command.");
               }
             }
           }
@@ -185,7 +189,7 @@ public class RadioRecommenderSystem {
                   System.out.println(targetSong + " was last played at time " + targetSong.getLastPlayTime() + ".");
                 }
               } catch (NumberFormatException e) {
-                System.err.println("Huh? What's ID #" + input[1] + "?");
+                System.out.println("Huh? What's ID #" + input[1] + "?");
               }
             }
           }
@@ -208,13 +212,13 @@ public class RadioRecommenderSystem {
                     System.out.println("I recommend that you play " + recommendation + 
                         " on station " + targetStation + ".");
                   } catch (IncorrectStationIDException e) {
-                    System.err.println(e.getMessage());
+                    System.out.println(e.getMessage());
                   } catch (InsufficientStationsException e) {
-                    System.err.println(e.getMessage());
+                    System.out.println(e.getMessage());
                   }
                 }
               } catch (NumberFormatException e) {
-                System.err.println("Huh? What's ID #" + input[1] + "?");
+                System.out.println("Huh? What's ID #" + input[1] + "?");
               }
             }
           }
@@ -236,12 +240,12 @@ public class RadioRecommenderSystem {
             System.out.print("> ");
             userInput = inputReader.readLine();
           } catch (IOException e) {
-            System.err.println("Input unrecognized. Type 'help' for a list of commands.");
+            System.out.println("Input unrecognized. Type 'help' for a list of commands.");
             userInput = "";
           }
         }
       } catch (IOException e) {
-        System.err.println("Whoops! Something went wrong. Let's do that again.");
+        System.out.println("Whoops! Something went wrong. Let's do that again.");
       }
     } while (userInput.equals(""));
     
@@ -258,7 +262,7 @@ public class RadioRecommenderSystem {
       String userInput = reader.readLine();
       return userInput;
     } catch (IOException e) {
-      System.err.println("Input unrecognized.");
+      System.out.println("Input unrecognized.");
       return "";
     }
   }
@@ -512,9 +516,9 @@ public class RadioRecommenderSystem {
           maxRecommendationIndex = recommendationIndex;
         }
       } catch (IncorrectStationIDException e) {
-        System.err.println(e.getMessage());
+        System.out.println(e.getMessage());
       } catch (IncorrectSongIDException e) {
-        System.err.println(e.getMessage());
+        System.out.println(e.getMessage());
       }
     }
     
