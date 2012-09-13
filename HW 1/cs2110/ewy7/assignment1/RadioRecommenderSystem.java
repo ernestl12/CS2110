@@ -161,6 +161,7 @@ public class RadioRecommenderSystem {
                   System.out.println("Station with ID #" + stationID + " doesn't exist.");
                 } else {
                   int time = targetSong.getLastPlayed(stationID);
+                  // Since Song class's lastPlayed always starts w/ 0, have to check that it's been played on the station
                   if (time == 0 && targetSong.getPlaysByStation(stationID) == 0) {
                     System.out.println(targetSong + " has never been played on " + targetStation + ".");
                   } else {
