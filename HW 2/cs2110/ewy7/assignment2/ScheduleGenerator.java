@@ -1,5 +1,8 @@
 //Don't import anything else.
 
+package cs2110.ewy7.assignment2;
+
+
 import java.util.Arrays; // you can only use toString & sort
 
 /**
@@ -55,7 +58,8 @@ public class ScheduleGenerator {
 	class MyInt {
 		public int v;
 		public MyInt(int v) { this.v = v; }
-		public String toString() { return Integer.toString(v); }
+		@Override
+    public String toString() { return Integer.toString(v); }
 	}
 	
 }

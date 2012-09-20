@@ -1,5 +1,7 @@
 // Don't import anything else.
 
+package cs2110.ewy7.assignment2;
+
 import java.util.ArrayList; // useful data structure
 import java.util.Arrays; // only use the toString method
 import java.util.Collections; // only use the sort method
@@ -98,7 +100,8 @@ public class Schedule {
 	/**
 	 * Creates a String representation of the schedule.
 	 */
-	public String toString() {
+	@Override
+  public String toString() {
 		// TODO: Implement me.
 		return null;
 	}

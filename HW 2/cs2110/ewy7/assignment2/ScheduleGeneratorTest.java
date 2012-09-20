@@ -1,6 +1,9 @@
+package cs2110.ewy7.assignment2;
+
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
 
 import java.util.*;
 import java.io.*;
