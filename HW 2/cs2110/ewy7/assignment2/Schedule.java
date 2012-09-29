@@ -51,8 +51,21 @@ public class Schedule {
 	 * @return True iff (tasks & m are valid).
 	 */
 	public static boolean areValid(int[] tasks, int m) {
-		// TODO: Implement me.
-		return false;
+		//return false if there are no tasks
+		if(tasks.length == 0)
+			return false;
+		
+		//return false if any task has 0 or negative duration
+		for(int i = 0; i < tasks.length; i++) {
+			if(tasks[i] <= 0) {
+				return false;
+			}
+		}
+		//return false if there is less than one processor
+		if(m <= 0)
+			return false;
+		
+		return true;
 	}
 	
 	/**
@@ -84,8 +97,17 @@ public class Schedule {
 	 * @return The makespan of the schedule.
 	 */
 	public int getMakespan() {
-		// TODO: Implement me.
-		return -1;
+		int[] current = new int[m];
+		int max = 0;
+		
+		//goes through schedule array and adds durations onto corresponding processor
+		for(int i = 0; i < schedule.length; i++)
+			current[schedule[i].p] = current[schedule[i].p] + tasks[i];
+		for(int item : current) {
+			if(item > max)
+				max = item;
+		}
+		return max;
 	}
 	
 	/**
@@ -93,17 +115,23 @@ public class Schedule {
 	 * @return The utilization of the processors w.r.t. to this schedule.
 	 */
 	public double getUtilization() {
-		// TODO: Implement me.
-		return -1;
+		double total = 0.0;
+		for(int num : tasks) {
+			total = total + num;
+		}
+		return (total / (getMakespan() * m));
 	}
 	
 	/**
 	 * Creates a String representation of the schedule.
 	 */
 	@Override
-  public String toString() {
-		// TODO: Implement me.
-		return null;
+	public String toString() {
+		return ("# Tasks: " + tasks.length + 
+				"\nDurations: " + Arrays.toString(tasks) + 
+				"\n# Processors: " + m + 
+				"\nSchedule @" + 
+				"\nMakespan :" + getMakespan());
 	}
 	
 	
