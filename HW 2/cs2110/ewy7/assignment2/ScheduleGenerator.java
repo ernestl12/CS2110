@@ -14,7 +14,8 @@ import java.util.Arrays; // you can only use toString & sort
 public class ScheduleGenerator {
 	private int[] tasks;
 	private int m;
-	
+	private int[] _mValues;
+
 	/**
 	 * If the arguments are not valid, throw an IllegalArgumentException.
 	 * 
@@ -22,7 +23,9 @@ public class ScheduleGenerator {
 	 * @param m Number of processors.
 	 */
 	public ScheduleGenerator(int[] tasks, int m) {
-		// TODO: Implement me.
+		this.tasks = tasks;
+		this.m = m;
+		_mValues = new int[m];
 	}
 	
 	/**
@@ -37,8 +40,24 @@ public class ScheduleGenerator {
 	 * @return The schedule given by a suboptimal heuristic algorithm.
 	 */
 	public Schedule heuristicScheduling() {
-		// TODO: Implement me.
-		return null;
+		ScheduledTask[] st = new ScheduledTask[tasks.length];
+		int current = 0;
+		
+		for(int i = 0; i < tasks.length; i++) {	
+			
+			//keep track of processor with min load
+			for(int p = 0; p < m; p++) {
+				if(mValues[p] < mValues[current])
+					current = p;
+			}
+			//assign a new task to current processor
+			st[i] = new ScheduledTask(i, current);
+			//add duration of task onto current processor
+			mValues[current] = mValues[current] + tasks[i];		
+		}
+		
+		Schedule sch = new Schedule(tasks, m, st);
+		return sch;
 	}
 	
 	/**
