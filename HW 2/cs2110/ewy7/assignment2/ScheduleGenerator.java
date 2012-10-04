@@ -16,7 +16,6 @@ public class ScheduleGenerator {
 	private int m;
 	private int optimalMakespan = 9999;
 	private ScheduledTask[] optimalST;
-	private int count = 0;
 
 	/**
 	 * If the arguments are not valid, throw an IllegalArgumentException.
@@ -68,7 +67,6 @@ public class ScheduleGenerator {
 	public Schedule getOptSchedule() {
 		
 		int[] mValues = new int[m];
-		
 		//tempTasks is a replica of tasks
 		//used to keep track of which tasks have been exhausted
 		//true = available, false = used
@@ -83,8 +81,12 @@ public class ScheduleGenerator {
 		tempTasks[0] = false;
 		mValues[0] += tasks[0];
 		
-		Schedule best = new Schedule(tasks, m, optimize(tempTasks, mValues, st, 1));
-		System.out.println("Trials: " + count);
+		optimize(tempTasks, mValues, st, 1);
+		
+		Schedule best = new Schedule(tasks, m, optimalST);
+		/*for(int i = 0; i < optimalST.length; i++) {
+			System.out.println(optimalST[i]);
+		}*/
 		return best;
 	}
 
@@ -102,12 +104,12 @@ public class ScheduleGenerator {
 			return temp;
 		}
 		
-		if(remaining[index]) {
-			for(int processor = 0; processor < m; processor++) {
+		for(int processor = 0; processor < m; processor++) {
+			if(remaining[index]) {
 				current[processor] += tasks[index];
 
-				System.out.println("temp index: " + index);
-				System.out.println(temp[index]);
+				//System.out.println("temp index: " + index);
+				//System.out.println(temp[index]);
 				
 				if(temp[index] == null) {
 					temp[index] = new ScheduledTask(index, processor);
@@ -115,28 +117,33 @@ public class ScheduleGenerator {
 				else {
 					temp[index].p = processor;
 				}
-				System.out.println("temp index: " + index);
-				System.out.println(temp[index]);
+				//System.out.println("temp index: " + index);
+				//System.out.println(temp[index]);
 				remaining[index] = false;
 					
-				System.out.println("JUMPING");
+				//System.out.println("JUMPING TO INDEX " + (index + 1));
 				temp = optimize(remaining, current, temp, index + 1);
-				System.out.println("RETURNED");
+				//System.out.println("RETURNING FROM INDEX " + (index + 1));
 
 				int makespan = obtainMakespan(temp);
-				
-				if(used(remaining) && makespan < optimalMakespan) {
+				/*if(used(remaining)) {
+					for(int i = 0; i < temp.length; i++) {
+						System.out.println(temp[i]);
+					}					
+				}*/
+
+				if(used(remaining) && (makespan < optimalMakespan)) {
 					optimalMakespan = makespan;
-					optimalST = temp;
+					registerOptimal(temp);
 					System.out.println("New Optimal: " + optimalMakespan);
 				}
-				else {
-					current[processor] -= tasks[index];
-					remaining[index] = true;
-				}
+				
+				current[processor] -= tasks[index];
+				remaining[index] = true;
+				
 			}
 		}
-		return optimalST;
+		return temp;
 	}
 
 	//checks to see whether all tasks are used
@@ -144,29 +151,39 @@ public class ScheduleGenerator {
 		for(int p = 0; p < checkList.length; p++)
 		{
 			if(checkList[p]) {
-				System.out.println("Checking task usage...false!");
+				//System.out.println("Checking task usage...false!");
 				return false;
 			}
 		}
-		System.out.println("Checking task usage...true!");
+		//System.out.println("Checking task usage...true!");
 		return true;
 	}
 	
 	//self explanatory
 	private int obtainMakespan(ScheduledTask[] st) {
-		for(int i = 0; i < st.length; i++) {
-			System.out.println(st[i]);
-		}
-		System.out.println("Schedule creation");
 		Schedule sched = new Schedule(tasks, m, st);
+		System.out.println("created schedule");
 		for(int i = 0; i < st.length; i++) {
 			System.out.println(st[i]);
-		}
-		System.out.println(sched);
-		count++;
+		}			
 		return sched.getMakespan();
 	}	
 
+	private void registerOptimal(ScheduledTask[] st){
+		if(optimalST == null) {
+			optimalST = new ScheduledTask[st.length];
+			for(int task = 0; task < optimalST.length; task++) {
+				optimalST[task] = new ScheduledTask(st[task].id, st[task].p);
+			}						
+		}
+		else {
+			for(int task = 0; task < optimalST.length; task++) {
+				optimalST[task].id = st[task].id;
+				optimalST[task].p = st[task].p;
+			}							
+		}		
+	}
+	
 	/**
 	 * NOTE: You do NOT have to use this class if you don't want to or
 	 * you can't see why it's useful.
