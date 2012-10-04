@@ -1,7 +1,7 @@
+package release;
+
 //Don't import anything else.
-
-package cs2110.ewy7.assignment2;
-
+//Known errors: No exceptions thrown yet
 
 import java.util.Arrays; // you can only use toString & sort
 
@@ -16,7 +16,6 @@ public class ScheduleGenerator {
 	private int m;
 	private int optimalMakespan = 9999;
 	private ScheduledTask[] optimalST;
-
 	/**
 	 * If the arguments are not valid, throw an IllegalArgumentException.
 	 * 
@@ -26,7 +25,6 @@ public class ScheduleGenerator {
 	public ScheduleGenerator(int[] tasks, int m) {
 		this.tasks = tasks;
 		this.m = m;
-		_mValues = new int[m];
 	}
 	
 	/**
@@ -43,6 +41,7 @@ public class ScheduleGenerator {
 	public Schedule heuristicScheduling() {
 		ScheduledTask[] st = new ScheduledTask[tasks.length];
 		int current = 0;
+		int[] mValues = new int[m];
 		
 		for(int i = 0; i < tasks.length; i++) {	
 			
@@ -66,7 +65,6 @@ public class ScheduleGenerator {
 	 */
 	public Schedule getOptSchedule() {
 		
-		int[] mValues = new int[m];
 		//tempTasks is a replica of tasks
 		//used to keep track of which tasks have been exhausted
 		//true = available, false = used
@@ -79,9 +77,8 @@ public class ScheduleGenerator {
 		ScheduledTask[] st = new ScheduledTask[tasks.length];
 		st[0] = new ScheduledTask(0 ,0);
 		tempTasks[0] = false;
-		mValues[0] += tasks[0];
 		
-		optimize(tempTasks, mValues, st, 1);
+		optimize(tempTasks, st, 1);
 		
 		Schedule best = new Schedule(tasks, m, optimalST);
 		/*for(int i = 0; i < optimalST.length; i++) {
@@ -94,8 +91,7 @@ public class ScheduleGenerator {
 	//current keeps track of current values of each processor
 	//temp keeps track of the current ScheduledTask[] array
 	//NOTE: The first task is the control value. It doesn't change with recursion to reduce repetition.
-	private ScheduledTask[] optimize(boolean[] taskList, int[] values, ScheduledTask[] schedtask, int index) {
-		int[] current = values;
+	private ScheduledTask[] optimize(boolean[] taskList, ScheduledTask[] schedtask, int index) {
 		boolean[] remaining = taskList;
 		ScheduledTask[] temp = schedtask;
 		
@@ -105,9 +101,6 @@ public class ScheduleGenerator {
 		}
 		
 		for(int processor = 0; processor < m; processor++) {
-			if(remaining[index]) {
-				current[processor] += tasks[index];
-
 				//System.out.println("temp index: " + index);
 				//System.out.println(temp[index]);
 				
@@ -122,30 +115,26 @@ public class ScheduleGenerator {
 				remaining[index] = false;
 					
 				//System.out.println("JUMPING TO INDEX " + (index + 1));
-				temp = optimize(remaining, current, temp, index + 1);
+				temp = optimize(remaining, temp, index + 1);
 				//System.out.println("RETURNING FROM INDEX " + (index + 1));
 
-				int makespan = obtainMakespan(temp);
+				//int makespan = obtainMakespan(temp);
 				/*if(used(remaining)) {
 					for(int i = 0; i < temp.length; i++) {
 						System.out.println(temp[i]);
 					}					
 				}*/
 
-				if(used(remaining) && (makespan < optimalMakespan)) {
-					optimalMakespan = makespan;
+				if(used(remaining) && (obtainMakespan(temp) < optimalMakespan)) {
+					optimalMakespan = obtainMakespan(temp);
 					registerOptimal(temp);
-					System.out.println("New Optimal: " + optimalMakespan);
+					//System.out.println("New Optimal: " + optimalMakespan);
 				}
-				
-				current[processor] -= tasks[index];
 				remaining[index] = true;
-				
-			}
 		}
 		return temp;
 	}
-
+	
 	//checks to see whether all tasks are used
 	private boolean used(boolean[] checkList) {
 		for(int p = 0; p < checkList.length; p++)
@@ -162,13 +151,10 @@ public class ScheduleGenerator {
 	//self explanatory
 	private int obtainMakespan(ScheduledTask[] st) {
 		Schedule sched = new Schedule(tasks, m, st);
-		System.out.println("created schedule");
-		for(int i = 0; i < st.length; i++) {
-			System.out.println(st[i]);
-		}			
 		return sched.getMakespan();
-	}	
-
+	}
+	
+	//registers a new optimal 
 	private void registerOptimal(ScheduledTask[] st){
 		if(optimalST == null) {
 			optimalST = new ScheduledTask[st.length];
@@ -193,8 +179,7 @@ public class ScheduleGenerator {
 	class MyInt {
 		public int v;
 		public MyInt(int v) { this.v = v; }
-		@Override
-    public String toString() { return Integer.toString(v); }
+		public String toString() { return Integer.toString(v); }
 	}
 	
 }
