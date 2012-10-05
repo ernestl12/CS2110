@@ -16,6 +16,7 @@ public class ScheduleGenerator {
 	private int m;
 	private int optimalMakespan = 9999;
 	private ScheduledTask[] optimalST;
+	private ScheduledTask[] currentST;
 	/**
 	 * If the arguments are not valid, throw an IllegalArgumentException.
 	 * 
@@ -65,6 +66,8 @@ public class ScheduleGenerator {
 	 */
 	public Schedule getOptSchedule() {
 		
+		int[] mValues = new int[m];
+		
 		//tempTasks is a replica of tasks
 		//used to keep track of which tasks have been exhausted
 		//true = available, false = used
@@ -72,18 +75,20 @@ public class ScheduleGenerator {
 		for(int index = 0; index < tasks.length; index++) {
 			tempTasks[index] = true;
 		}
+		currentST = new ScheduledTask[tasks.length];
+		optimalST = new ScheduledTask[tasks.length];
 		
-		//first task will always be assigned to processor 0
-		ScheduledTask[] st = new ScheduledTask[tasks.length];
-		st[0] = new ScheduledTask(0 ,0);
+		//first task will always be assigned to processor 0		
+		currentST[0] = new ScheduledTask(0 ,0);
 		tempTasks[0] = false;
+		mValues[0] += tasks[0];
 		
-		optimize(tempTasks, st, 1);
+		for(int task = 1; task < currentST.length; task++) {
+			currentST[task] = new ScheduledTask(task, 0);
+		}
 		
-		Schedule best = new Schedule(tasks, m, optimalST);
-		/*for(int i = 0; i < optimalST.length; i++) {
-			System.out.println(optimalST[i]);
-		}*/
+		Schedule best = new Schedule(tasks, m, optimize(tempTasks, currentST, mValues, 1));
+		
 		return best;
 	}
 
@@ -91,83 +96,62 @@ public class ScheduleGenerator {
 	//current keeps track of current values of each processor
 	//temp keeps track of the current ScheduledTask[] array
 	//NOTE: The first task is the control value. It doesn't change with recursion to reduce repetition.
-	private ScheduledTask[] optimize(boolean[] taskList, ScheduledTask[] schedtask, int index) {
+	private ScheduledTask[] optimize(boolean[] taskList, ScheduledTask[] schedtask, int[] values, int index) {
 		boolean[] remaining = taskList;
-		ScheduledTask[] temp = schedtask;
+		int[] curVals = values;
 		
 		//if all tasks are used, return the full schedule of tasks		
 		if(used(remaining)) {
-			return temp;
-		}
-		
+			return currentST;
+		}		
 		for(int processor = 0; processor < m; processor++) {
-				//System.out.println("temp index: " + index);
-				//System.out.println(temp[index]);
 				
-				if(temp[index] == null) {
-					temp[index] = new ScheduledTask(index, processor);
-				}
-				else {
-					temp[index].p = processor;
-				}
-				//System.out.println("temp index: " + index);
-				//System.out.println(temp[index]);
+				currentST[index].p = processor;
+				curVals[processor] += tasks[index];
 				remaining[index] = false;
 					
-				//System.out.println("JUMPING TO INDEX " + (index + 1));
-				temp = optimize(remaining, temp, index + 1);
-				//System.out.println("RETURNING FROM INDEX " + (index + 1));
-
-				//int makespan = obtainMakespan(temp);
-				/*if(used(remaining)) {
-					for(int i = 0; i < temp.length; i++) {
-						System.out.println(temp[i]);
-					}					
-				}*/
-
-				if(used(remaining) && (obtainMakespan(temp) < optimalMakespan)) {
-					optimalMakespan = obtainMakespan(temp);
-					registerOptimal(temp);
-					//System.out.println("New Optimal: " + optimalMakespan);
+				currentST = optimize(remaining, currentST, curVals, index + 1);
+				
+				int makespan = obtainMakespanTwo(curVals);
+				
+				if(used(remaining) && (makespan < optimalMakespan)) {
+					optimalMakespan = makespan;
+					registerOptimal(currentST);
 				}
+				curVals[processor] -= tasks[index];
 				remaining[index] = true;
 		}
-		return temp;
+		//System.out.println("This is stack # " + index);
+		//printOpt();
+		if(index > 1)
+			return currentST;
+		else
+			return optimalST;
 	}
 	
 	//checks to see whether all tasks are used
 	private boolean used(boolean[] checkList) {
-		for(int p = 0; p < checkList.length; p++)
-		{
-			if(checkList[p]) {
-				//System.out.println("Checking task usage...false!");
+		for(int p = 0; p < checkList.length; p++) {
+			if(checkList[p])
 				return false;
-			}
 		}
-		//System.out.println("Checking task usage...true!");
 		return true;
 	}
 	
-	//self explanatory
-	private int obtainMakespan(ScheduledTask[] st) {
-		Schedule sched = new Schedule(tasks, m, st);
-		return sched.getMakespan();
+	private int obtainMakespanTwo(int[] values) {
+		int max = 0;
+		for(int i = 0; i < values.length; i++) {
+			if(values[i] > max)
+				max = values[i];
+		}
+		return max;
 	}
 	
 	//registers a new optimal 
 	private void registerOptimal(ScheduledTask[] st){
-		if(optimalST == null) {
-			optimalST = new ScheduledTask[st.length];
-			for(int task = 0; task < optimalST.length; task++) {
-				optimalST[task] = new ScheduledTask(st[task].id, st[task].p);
-			}						
-		}
-		else {
-			for(int task = 0; task < optimalST.length; task++) {
-				optimalST[task].id = st[task].id;
-				optimalST[task].p = st[task].p;
-			}							
-		}		
+		for(int task = 0; task < optimalST.length; task++) {
+			optimalST[task] = new ScheduledTask(st[task].id, st[task].p);
+		}							
 	}
 	
 	/**
